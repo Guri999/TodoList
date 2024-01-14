@@ -3,27 +3,12 @@ package com.jess.nbcamp.challnge2.practice.signup
 import androidx.annotation.StringRes
 import com.jess.nbcamp.challnge2.R
 
-data class SignUpUiState(
+data class SignUpUserUiState(
     val name: String?,
     val email: String?,
     val emailService: String?,
-    val emailPosition: Int,
-    val emailServices: List<String>,
-    @StringRes val button: Int,
-    val buttonEnable: Boolean,
-) {
-    companion object {
-        fun init() = SignUpUiState(
-            name = null,
-            email = null,
-            emailService = null,
-            emailPosition = 0,
-            emailServices = emptyList(),
-            button = R.string.sign_up_confirm,
-            buttonEnable = false
-        )
-    }
-}
+    val emailPosition: Int
+)
 
 data class SignUpErrorUiState(
     val name: SignUpErrorMessage,
@@ -41,7 +26,18 @@ data class SignUpErrorUiState(
             password = SignUpErrorMessage.PASS,
             passwordEnabled = false,
             passwordConfirm = SignUpErrorMessage.PASS,
+        )
+    }
+}
 
-            )
+data class SignUpButtonUiState(
+    @StringRes val text: Int,
+    val enabled: Boolean
+) {
+    companion object {
+        fun init() = SignUpButtonUiState(
+            text = R.string.sign_up_confirm,
+            enabled = false,
+        )
     }
 }

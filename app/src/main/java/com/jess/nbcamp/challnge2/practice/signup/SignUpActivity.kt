@@ -24,7 +24,7 @@ class SignUpActivity : AppCompatActivity() {
         fun newIntent(
             context: Context,
             entryType: SignUpEntryType,
-            entity: SignUpUserEntity
+            entity: SignUpUserEntity? = null
         ): Intent = Intent(context, SignUpActivity()::class.java).apply {
             putExtra(EXTRA_ENTRY_TYPE, entryType.ordinal)
             putExtra(EXTRA_USER_ENTITY, entity)
@@ -120,19 +120,21 @@ class SignUpActivity : AppCompatActivity() {
             }
         }
 
-        uiState.observe(this@SignUpActivity) {
+        userUiState.observe(this@SignUpActivity) {
             with(binding) {
                 etName.setText(it.name)
                 etEmail.setText(it.email)
                 etEmailService.setText(it.emailService)
                 serviceProvider.setSelection(it.emailPosition)
-                btConfirm.setText(it.button)
-                serviceProvider.adapter = ArrayAdapter(
-                    this@SignUpActivity,
-                    android.R.layout.simple_spinner_dropdown_item,
-                    it.emailServices
-                )
             }
+        }
+
+        emailServices.observe(this@SignUpActivity) {
+            binding.serviceProvider.adapter = ArrayAdapter(
+                this@SignUpActivity,
+                android.R.layout.simple_spinner_dropdown_item,
+                it
+            )
         }
 
         errorUiState.observe(this@SignUpActivity) {
@@ -154,12 +156,15 @@ class SignUpActivity : AppCompatActivity() {
             }
         }
 
-        buttonEnable.observe(this@SignUpActivity) {
-            binding.btConfirm.isEnabled = it
+        buttonUiState.observe(this@SignUpActivity) {
+            with(binding.btConfirm) {
+                setText(it.text)
+                isEnabled = it.enabled
+            }
         }
     }
 
-    private fun setTextChangedListener() = with(binding) {
+    private fun setTextChangedListener() {
         editTexts.forEach { editText ->
             editText.addTextChangedListener {
                 editText.setErrorMessage()
@@ -187,7 +192,7 @@ class SignUpActivity : AppCompatActivity() {
                 etEmailService.isVisible
             )
 
-            etPassword -> viewModel.checkValidPassword(tvPasswordError.text.toString())
+            etPassword -> viewModel.checkValidPassword(etPassword.text.toString())
             etPasswordConfirm -> viewModel.checkValidPasswordConfirm(
                 etPassword.text.toString(),
                 etPasswordConfirm.text.toString()

@@ -19,58 +19,59 @@ class SignUpViewModel(
     private val userEntity: SignUpUserEntity?
 ) : ViewModel() {
 
-    private val emailServices = listOf(
+    // event
+    private val _event: MutableLiveData<SignUpEvent> = MutableLiveData()
+    val event: LiveData<SignUpEvent> get() = _event
+
+    // user
+    private val _emailServices: MutableLiveData<List<String>> = MutableLiveData()
+    val emailServices: LiveData<List<String>> get() = _emailServices
+
+    // user
+    private val _userUiState: MutableLiveData<SignUpUserUiState> = MutableLiveData()
+    val userUiState: LiveData<SignUpUserUiState> get() = _userUiState
+
+    // error
+    private val _errorUiState: MutableLiveData<SignUpErrorUiState?> = MutableLiveData()
+    val errorUiState: LiveData<SignUpErrorUiState?> get() = _errorUiState
+
+    // error
+    private val _buttonUiState: MutableLiveData<SignUpButtonUiState> = MutableLiveData()
+    val buttonUiState: LiveData<SignUpButtonUiState> get() = _buttonUiState
+
+    init {
+        _emailServices.value = getEmailServices()
+        _errorUiState.value = SignUpErrorUiState.init()
+        _buttonUiState.value = SignUpButtonUiState.init()
+        initUserUiState()
+    }
+
+    private fun initUserUiState() {
+        val index = emailServices.value?.indexOf(userEntity?.emailService) ?: 0
+        if (entryType == SignUpEntryType.UPDATE) {
+            _userUiState.value = SignUpUserUiState(
+                name = userEntity?.name,
+                email = userEntity?.email,
+                emailService = userEntity?.emailService,
+                emailPosition = if (index < 0) {
+                    emailServices.value?.lastIndex ?: 0
+                } else {
+                    index
+                }
+            )
+        }
+    }
+
+    private fun getEmailServices() = listOf(
         resourceProvider.getString(R.string.sign_up_email_provider_gmail),
         resourceProvider.getString(R.string.sign_up_email_provider_kakao),
         resourceProvider.getString(R.string.sign_up_email_provider_naver),
         resourceProvider.getString(R.string.sign_up_email_provider_direct)
     )
 
-    // event
-    private val _event: MutableLiveData<SignUpEvent> = MutableLiveData()
-    val event: LiveData<SignUpEvent> get() = _event
-
-    // user
-    private val _uiState: MutableLiveData<SignUpUiState> = MutableLiveData()
-    val uiState: LiveData<SignUpUiState> get() = _uiState
-
-    // error
-    private val _errorUiState: MutableLiveData<SignUpErrorUiState?> = MutableLiveData()
-    val errorUiState: LiveData<SignUpErrorUiState?> get() = _errorUiState
-
-    // user
-    private val _buttonEnable: MutableLiveData<Boolean> = MutableLiveData()
-    val buttonEnable: LiveData<Boolean> get() = _buttonEnable
-
-    init {
-        initUiState()
-        _errorUiState.value = SignUpErrorUiState.init()
-    }
-
-    private fun initUiState() {
-        val index = emailServices.indexOf(userEntity?.emailService)
-        _uiState.value = SignUpUiState(
-            name = userEntity?.name,
-            email = userEntity?.email,
-            emailService = userEntity?.emailService,
-            emailPosition = if (index < 0) {
-                emailServices.lastIndex
-            } else {
-                index
-            },
-            emailServices = emailServices,
-            button = if (entryType == SignUpEntryType.UPDATE) {
-                R.string.sign_up_update
-            } else {
-                R.string.sign_up_confirm
-            },
-            buttonEnable = false
-        )
-    }
-
     fun onItemSelectedEmailService(position: Int) {
         _event.value = SignUpEvent.VisibleEmailService(
-            position == emailServices.lastIndex
+            position == getEmailServices().lastIndex
         )
     }
 
@@ -155,7 +156,9 @@ class SignUpViewModel(
     }
 
     fun checkConfirmButtonEnable() {
-        _buttonEnable.value = isConfirmButtonEnable()
+        _buttonUiState.value = buttonUiState.value?.copy(
+            enabled = isConfirmButtonEnable()
+        )
     }
 
     fun onClickSignUp() {
