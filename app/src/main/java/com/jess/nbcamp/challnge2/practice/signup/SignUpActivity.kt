@@ -38,7 +38,7 @@ class SignUpActivity : AppCompatActivity() {
     private val binding: SignUpActivityBinding by lazy {
         SignUpActivityBinding.inflate(layoutInflater)
     }
-    
+
     private val entryType: SignUpEntryType by lazy {
         SignUpEntryType.getEntryType(
             intent?.getIntExtra(EXTRA_ENTRY_TYPE, 0)
@@ -87,8 +87,18 @@ class SignUpActivity : AppCompatActivity() {
         // focus out 처리
         setOnFocusChangedListener()
 
-        // 이메일 서비스 제공자 처리
-        setServiceProvider()
+        serviceProvider.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onNothingSelected(parent: AdapterView<*>?) = Unit
+
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                viewModel.onItemSelectedEmailService(position)
+            }
+        }
 
         btConfirm.setOnClickListener {
             if (isConfirmButtonEnable()) {
@@ -118,21 +128,6 @@ class SignUpActivity : AppCompatActivity() {
                     android.R.layout.simple_spinner_dropdown_item,
                     it.emailServices
                 )
-            }
-        }
-    }
-
-    private fun setServiceProvider() = with(binding) {
-        serviceProvider.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onNothingSelected(parent: AdapterView<*>?) = Unit
-
-            override fun onItemSelected(
-                parent: AdapterView<*>?,
-                view: View?,
-                position: Int,
-                id: Long
-            ) {
-                viewModel.onItemSelectedEmailService(position)
             }
         }
     }
