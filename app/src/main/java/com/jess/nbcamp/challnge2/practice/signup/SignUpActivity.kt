@@ -12,7 +12,6 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
-import com.jess.nbcamp.challnge2.R
 import com.jess.nbcamp.challnge2.databinding.SignUpActivityBinding
 import com.jess.nbcamp.challnge2.practice.signup.SignUpValidExtension.includeAt
 import com.jess.nbcamp.challnge2.practice.signup.SignUpValidExtension.includeSpecialCharacters
@@ -39,15 +38,7 @@ class SignUpActivity : AppCompatActivity() {
     private val binding: SignUpActivityBinding by lazy {
         SignUpActivityBinding.inflate(layoutInflater)
     }
-
-    private val emailProvider
-        get() = listOf(
-            getString(R.string.sign_up_email_provider_gmail),
-            getString(R.string.sign_up_email_provider_kakao),
-            getString(R.string.sign_up_email_provider_naver),
-            getString(R.string.sign_up_email_provider_direct)
-        )
-
+    
     private val entryType: SignUpEntryType by lazy {
         SignUpEntryType.getEntryType(
             intent?.getIntExtra(EXTRA_ENTRY_TYPE, 0)
