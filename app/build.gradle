@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace 'com.jess.nbcamp.challnge2'
-    compileSdk 33
+    compileSdk 34
 
     defaultConfig {
         applicationId "com.jess.nbcamp.challnge2"

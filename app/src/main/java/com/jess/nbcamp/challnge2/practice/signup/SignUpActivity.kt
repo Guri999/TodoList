@@ -8,7 +8,6 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.EditText
-import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
@@ -63,14 +62,20 @@ class SignUpActivity : AppCompatActivity() {
         }
     }
 
-    private val viewModel: SignUpViewModel by viewModels()
+    private val viewModel: SignUpViewModel by viewModels {
+        SignUpViewModelFactory(
+            context = this@SignUpActivity,
+            entryType = entryType,
+            userEntity = userEntity
+        )
+    }
 
     private val editTexts
         get() = with(binding) {
             listOf(
                 etName,
                 etEmail,
-                etEmailProvider,
+                etEmailService,
                 etPassword,
                 etPasswordConfirm
             )
@@ -106,18 +111,40 @@ class SignUpActivity : AppCompatActivity() {
 
             setOnClickListener {
                 if (isConfirmButtonEnable()) {
-                    // TODO 회원가입 처리
-                    viewModel.test("hi")
+                    viewModel.onClickSignUp(
+
+                    )
                 }
             }
         }
 
-        setUserEntity()
+//        setUserEntity()
     }
 
     private fun initViewModel() = with(viewModel) {
-        test.observe(this@SignUpActivity) {
-            Toast.makeText(this@SignUpActivity, it, Toast.LENGTH_SHORT).show()
+        event.observe(this@SignUpActivity) {
+            when (it) {
+                is SignUpEvent.VisibleEmailService -> {
+                    binding.etEmailService.isVisible = it.visible
+                }
+            }
+        }
+
+        emailService.observe(this@SignUpActivity) {
+            binding.serviceProvider.adapter = ArrayAdapter(
+                this@SignUpActivity,
+                android.R.layout.simple_spinner_dropdown_item,
+                it
+            )
+        }
+
+        user.observe(this@SignUpActivity) {
+            with(binding) {
+                etName.setText(it.name)
+                etEmail.setText(it.email)
+                etEmailService.setText(it.emailService)
+                serviceProvider.setSelection(it.emailPosition)
+            }
         }
     }
 
@@ -129,7 +156,7 @@ class SignUpActivity : AppCompatActivity() {
         // -1 일 경우 못찾음
         serviceProvider.setSelection(
             if (index < 0) {
-                etEmailProvider.setText(userEntity?.emailService)
+                etEmailService.setText(userEntity?.emailService)
                 emailProvider.lastIndex
             } else {
                 index
@@ -138,17 +165,6 @@ class SignUpActivity : AppCompatActivity() {
     }
 
     private fun setServiceProvider() = with(binding) {
-        serviceProvider.adapter = ArrayAdapter(
-            this@SignUpActivity,
-            android.R.layout.simple_spinner_dropdown_item,
-            listOf(
-                getString(R.string.sign_up_email_provider_gmail),
-                getString(R.string.sign_up_email_provider_kakao),
-                getString(R.string.sign_up_email_provider_naver),
-                getString(R.string.sign_up_email_provider_direct)
-            )
-        )
-
         serviceProvider.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onNothingSelected(parent: AdapterView<*>?) = Unit
 
@@ -158,7 +174,7 @@ class SignUpActivity : AppCompatActivity() {
                 position: Int,
                 id: Long
             ) {
-                etEmailProvider.isVisible = position == serviceProvider.adapter.count - 1
+                viewModel.onItemSelectedEmailService(position)
             }
         }
     }
@@ -187,7 +203,7 @@ class SignUpActivity : AppCompatActivity() {
         when (this@setErrorMessage) {
             etName -> tvNameError.text = getMessageValidName()
             etEmail -> tvEmailError.text = getMessageValidEmail()
-            etEmailProvider -> tvEmailError.text = getMessageValidEmailProvider()
+            etEmailService -> tvEmailError.text = getMessageValidEmailProvider()
             etPassword -> {
                 with(tvPasswordError) {
                     isEnabled = etPassword.text.toString().isNotBlank()
@@ -225,10 +241,10 @@ class SignUpActivity : AppCompatActivity() {
     }
 
     private fun getMessageValidEmailProvider(): String {
-        val text = binding.etEmailProvider.text.toString()
+        val text = binding.etEmailService.text.toString()
         return if (
-            binding.etEmailProvider.isVisible
-            && (binding.etEmailProvider.text.toString().isBlank()
+            binding.etEmailService.isVisible
+            && (binding.etEmailService.text.toString().isBlank()
                     || text.validEmailServiceProvider().not())
         ) {
             getString(SignUpErrorMessage.EMAIL_SERVICE_PROVIDER.message)
