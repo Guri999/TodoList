@@ -99,26 +99,11 @@ class SignUpActivity : AppCompatActivity() {
         // 이메일 서비스 제공자 처리
         setServiceProvider()
 
-        // 버튼 이름 변경
-        with(btConfirm) {
-            setText(
-                if (entryType == SignUpEntryType.UPDATE) {
-                    R.string.sign_up_update
-                } else {
-                    R.string.sign_up_confirm
-                }
-            )
-
-            setOnClickListener {
-                if (isConfirmButtonEnable()) {
-                    viewModel.onClickSignUp(
-
-                    )
-                }
+        btConfirm.setOnClickListener {
+            if (isConfirmButtonEnable()) {
+                viewModel.onClickSignUp()
             }
         }
-
-//        setUserEntity()
     }
 
     private fun initViewModel() = with(viewModel) {
@@ -130,14 +115,6 @@ class SignUpActivity : AppCompatActivity() {
             }
         }
 
-        emailService.observe(this@SignUpActivity) {
-            binding.serviceProvider.adapter = ArrayAdapter(
-                this@SignUpActivity,
-                android.R.layout.simple_spinner_dropdown_item,
-                it
-            )
-        }
-
         uiState.observe(this@SignUpActivity) {
             with(binding) {
                 etName.setText(it.name)
@@ -145,24 +122,13 @@ class SignUpActivity : AppCompatActivity() {
                 etEmailService.setText(it.emailService)
                 serviceProvider.setSelection(it.emailPosition)
                 btConfirm.setText(it.button)
+                serviceProvider.adapter = ArrayAdapter(
+                    this@SignUpActivity,
+                    android.R.layout.simple_spinner_dropdown_item,
+                    it.emailServices
+                )
             }
         }
-    }
-
-    private fun setUserEntity() = with(binding) {
-        etName.setText(userEntity?.name)
-        etEmail.setText(userEntity?.email)
-
-        val index = emailProvider.indexOf(userEntity?.emailService)
-        // -1 일 경우 못찾음
-        serviceProvider.setSelection(
-            if (index < 0) {
-                etEmailService.setText(userEntity?.emailService)
-                emailProvider.lastIndex
-            } else {
-                index
-            }
-        )
     }
 
     private fun setServiceProvider() = with(binding) {

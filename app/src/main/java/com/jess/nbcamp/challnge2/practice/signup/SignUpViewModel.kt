@@ -26,10 +26,6 @@ class SignUpViewModel(
     private val _event: MutableLiveData<SignUpEvent> = MutableLiveData()
     val event: LiveData<SignUpEvent> get() = _event
 
-    // email service
-    private val _emailService: MutableLiveData<List<String>> = MutableLiveData()
-    val emailService: LiveData<List<String>> get() = _emailService
-
     // user
     private val _uiState: MutableLiveData<SignUpUiState> = MutableLiveData()
     val uiState: LiveData<SignUpUiState> get() = _uiState
@@ -39,8 +35,6 @@ class SignUpViewModel(
     }
 
     private fun initUiState() {
-        _emailService.value = emailServices
-
         val index = emailServices.indexOf(userEntity?.emailService)
         _uiState.value = uiState.value?.copy(
             name = userEntity?.name,
@@ -51,6 +45,7 @@ class SignUpViewModel(
             } else {
                 index
             },
+            emailServices = emailServices,
             button = if (entryType == SignUpEntryType.UPDATE) {
                 R.string.sign_up_update
             } else {

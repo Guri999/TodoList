@@ -9,5 +9,6 @@ data class SignUpUiState(
     // email
     val emailService: String? = null,
     val emailPosition: Int = 0,
+    val emailServices: List<String> = emptyList(),
     @StringRes val button: Int = R.string.sign_up_confirm
 )
