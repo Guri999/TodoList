@@ -13,4 +13,7 @@ class SignUpViewModel : ViewModel() {
         _test.value = text
     }
 
+    fun onClickSignUp() {
+
+    }
 }

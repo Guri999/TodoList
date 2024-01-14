@@ -7,16 +7,14 @@ import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.Button
 import android.widget.EditText
-import android.widget.Spinner
-import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
-import androidx.lifecycle.ViewModelProvider
 import com.jess.nbcamp.challnge2.R
+import com.jess.nbcamp.challnge2.databinding.SignUpActivityBinding
 import com.jess.nbcamp.challnge2.practice.signup.SignUpValidExtension.includeAt
 import com.jess.nbcamp.challnge2.practice.signup.SignUpValidExtension.includeSpecialCharacters
 import com.jess.nbcamp.challnge2.practice.signup.SignUpValidExtension.includeUpperCase
@@ -39,48 +37,8 @@ class SignUpActivity : AppCompatActivity() {
         }
     }
 
-    private val etName: EditText by lazy {
-        findViewById(R.id.et_name)
-    }
-
-    private val tvNameError: TextView by lazy {
-        findViewById(R.id.tv_name_error)
-    }
-
-    private val etEmail: EditText by lazy {
-        findViewById(R.id.et_email)
-    }
-
-    private val etEmailProvider: EditText by lazy {
-        findViewById(R.id.et_provider)
-    }
-
-    private val serviceProvider: Spinner by lazy {
-        findViewById(R.id.service_provider)
-    }
-
-    private val tvEmailError: TextView by lazy {
-        findViewById(R.id.tv_email_error)
-    }
-
-    private val etPassword: EditText by lazy {
-        findViewById(R.id.et_password)
-    }
-
-    private val tvPasswordError: TextView by lazy {
-        findViewById(R.id.tv_password_error)
-    }
-
-    private val etPasswordConfirm: EditText by lazy {
-        findViewById(R.id.et_password_confirm)
-    }
-
-    private val tvPasswordConfirmError: TextView by lazy {
-        findViewById(R.id.tv_password_confirm_error)
-    }
-
-    private val btConfirm: Button by lazy {
-        findViewById(R.id.bt_confirm)
+    private val binding: SignUpActivityBinding by lazy {
+        SignUpActivityBinding.inflate(layoutInflater)
     }
 
     private val emailProvider
@@ -105,28 +63,28 @@ class SignUpActivity : AppCompatActivity() {
         }
     }
 
-    private val viewModel by lazy {
-        ViewModelProvider(this)[SignUpViewModel::class.java]
-    }
+    private val viewModel: SignUpViewModel by viewModels()
 
     private val editTexts
-        get() = listOf(
-            etName,
-            etEmail,
-            etEmailProvider,
-            etPassword,
-            etPasswordConfirm
-        )
+        get() = with(binding) {
+            listOf(
+                etName,
+                etEmail,
+                etEmailProvider,
+                etPassword,
+                etPasswordConfirm
+            )
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.sign_up_activity)
+        setContentView(binding.root)
 
         initView()
         initViewModel()
     }
 
-    private fun initView() {
+    private fun initView() = with(binding) {
 
         setTextChangedListener()
 
@@ -163,7 +121,7 @@ class SignUpActivity : AppCompatActivity() {
         }
     }
 
-    private fun setUserEntity() {
+    private fun setUserEntity() = with(binding) {
         etName.setText(userEntity?.name)
         etEmail.setText(userEntity?.email)
 
@@ -179,9 +137,9 @@ class SignUpActivity : AppCompatActivity() {
         )
     }
 
-    private fun setServiceProvider() {
+    private fun setServiceProvider() = with(binding) {
         serviceProvider.adapter = ArrayAdapter(
-            this,
+            this@SignUpActivity,
             android.R.layout.simple_spinner_dropdown_item,
             listOf(
                 getString(R.string.sign_up_email_provider_gmail),
@@ -205,7 +163,7 @@ class SignUpActivity : AppCompatActivity() {
         }
     }
 
-    private fun setTextChangedListener() {
+    private fun setTextChangedListener() = with(binding) {
         editTexts.forEach { editText ->
             editText.addTextChangedListener {
                 editText.setErrorMessage()
@@ -214,7 +172,7 @@ class SignUpActivity : AppCompatActivity() {
         }
     }
 
-    private fun setOnFocusChangedListener() {
+    private fun setOnFocusChangedListener() = with(binding) {
         editTexts.forEach { editText ->
             editText.setOnFocusChangeListener { _, hasFocus ->
                 if (hasFocus.not()) {
@@ -225,8 +183,8 @@ class SignUpActivity : AppCompatActivity() {
         }
     }
 
-    private fun EditText.setErrorMessage() {
-        when (this) {
+    private fun EditText.setErrorMessage() = with(binding) {
+        when (this@setErrorMessage) {
             etName -> tvNameError.text = getMessageValidName()
             etEmail -> tvEmailError.text = getMessageValidEmail()
             etEmailProvider -> tvEmailError.text = getMessageValidEmailProvider()
@@ -248,7 +206,7 @@ class SignUpActivity : AppCompatActivity() {
     }
 
     private fun getMessageValidName(): String = getString(
-        if (etName.text.toString().isBlank()) {
+        if (binding.etName.text.toString().isBlank()) {
             SignUpErrorMessage.NAME
         } else {
             SignUpErrorMessage.PASS
@@ -256,7 +214,7 @@ class SignUpActivity : AppCompatActivity() {
     )
 
     private fun getMessageValidEmail(): String {
-        val text = etEmail.text.toString()
+        val text = binding.etEmail.text.toString()
         return getString(
             when {
                 text.isBlank() -> SignUpErrorMessage.EMAIL_BLANK
@@ -267,10 +225,10 @@ class SignUpActivity : AppCompatActivity() {
     }
 
     private fun getMessageValidEmailProvider(): String {
-        val text = etEmailProvider.text.toString()
+        val text = binding.etEmailProvider.text.toString()
         return if (
-            etEmailProvider.isVisible
-            && (etEmailProvider.text.toString().isBlank()
+            binding.etEmailProvider.isVisible
+            && (binding.etEmailProvider.text.toString().isBlank()
                     || text.validEmailServiceProvider().not())
         ) {
             getString(SignUpErrorMessage.EMAIL_SERVICE_PROVIDER.message)
@@ -280,7 +238,7 @@ class SignUpActivity : AppCompatActivity() {
     }
 
     private fun getMessageValidPassword(): String {
-        val text = etPassword.text.toString()
+        val text = binding.etPassword.text.toString()
         return getString(
             when {
                 text.length < 10 -> SignUpErrorMessage.PASSWORD_LENGTH
@@ -297,7 +255,7 @@ class SignUpActivity : AppCompatActivity() {
 
     private fun getMessageValidPasswordConfirm(): String =
         getString(
-            if (etPassword.text.toString() != etPasswordConfirm.text.toString()) {
+            if (binding.etPassword.text.toString() != binding.etPasswordConfirm.text.toString()) {
                 SignUpErrorMessage.PASSWORD_PASSWORD
             } else {
                 SignUpErrorMessage.PASS
