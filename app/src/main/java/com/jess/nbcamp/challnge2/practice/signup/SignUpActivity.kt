@@ -82,6 +82,7 @@ class SignUpActivity : AppCompatActivity() {
 
     private fun initView() = with(binding) {
 
+        // text changed 
         setTextChangedListener()
 
         // focus out 처리
