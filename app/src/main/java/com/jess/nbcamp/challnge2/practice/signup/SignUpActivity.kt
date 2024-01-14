@@ -13,10 +13,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import com.jess.nbcamp.challnge2.databinding.SignUpActivityBinding
-import com.jess.nbcamp.challnge2.practice.signup.SignUpValidExtension.includeAt
-import com.jess.nbcamp.challnge2.practice.signup.SignUpValidExtension.includeSpecialCharacters
-import com.jess.nbcamp.challnge2.practice.signup.SignUpValidExtension.includeUpperCase
-import com.jess.nbcamp.challnge2.practice.signup.SignUpValidExtension.validEmailServiceProvider
 
 class SignUpActivity : AppCompatActivity() {
 
@@ -82,7 +78,7 @@ class SignUpActivity : AppCompatActivity() {
 
     private fun initView() = with(binding) {
 
-        // text changed 
+        // text changed
         setTextChangedListener()
 
         // focus out 처리
@@ -102,9 +98,7 @@ class SignUpActivity : AppCompatActivity() {
         }
 
         btConfirm.setOnClickListener {
-            if (isConfirmButtonEnable()) {
-                viewModel.onClickSignUp()
-            }
+            viewModel.onClickSignUp()
         }
     }
 
@@ -113,6 +107,15 @@ class SignUpActivity : AppCompatActivity() {
             when (it) {
                 is SignUpEvent.VisibleEmailService -> {
                     binding.etEmailService.isVisible = it.visible
+                }
+
+                is SignUpEvent.ClickConfirmButton -> {
+                    setResult(RESULT_OK,
+                        Intent().apply {
+                            // TODO 이것 저것
+                        }
+                    )
+                    finish()
                 }
             }
         }
@@ -131,13 +134,36 @@ class SignUpActivity : AppCompatActivity() {
                 )
             }
         }
+
+        errorUiState.observe(this@SignUpActivity) {
+            if (it == null) {
+                return@observe
+            }
+
+            with(binding) {
+                tvNameError.setText(it.name.message)
+                tvEmailError.setText(it.email.message)
+                tvEmailError.setText(it.emailService.message)
+
+                with(tvPasswordError) {
+                    isEnabled = it.passwordEnabled
+                    setText(it.password.message)
+                }
+
+                tvPasswordConfirmError.setText(it.passwordConfirm.message)
+            }
+        }
+
+        buttonEnable.observe(this@SignUpActivity) {
+            binding.btConfirm.isEnabled = it
+        }
     }
 
     private fun setTextChangedListener() = with(binding) {
         editTexts.forEach { editText ->
             editText.addTextChangedListener {
                 editText.setErrorMessage()
-                btConfirm.isEnabled = isConfirmButtonEnable()
+                viewModel.checkConfirmButtonEnable()
             }
         }
     }
@@ -147,7 +173,6 @@ class SignUpActivity : AppCompatActivity() {
             editText.setOnFocusChangeListener { _, hasFocus ->
                 if (hasFocus.not()) {
                     editText.setErrorMessage()
-                    btConfirm.isEnabled = isConfirmButtonEnable()
                 }
             }
         }
@@ -155,86 +180,20 @@ class SignUpActivity : AppCompatActivity() {
 
     private fun EditText.setErrorMessage() = with(binding) {
         when (this@setErrorMessage) {
-            etName -> tvNameError.text = getMessageValidName()
-            etEmail -> tvEmailError.text = getMessageValidEmail()
-            etEmailService -> tvEmailError.text = getMessageValidEmailProvider()
-            etPassword -> {
-                with(tvPasswordError) {
-                    isEnabled = etPassword.text.toString().isNotBlank()
-                    text = if (etPassword.text.toString().isBlank()) {
-                        getString(SignUpErrorMessage.PASSWORD_HINT.message)
-                    } else {
-                        getMessageValidPassword()
-                    }
-                }
-            }
+            etName -> viewModel.checkValidName(etName.text.toString())
+            etEmail -> viewModel.checkValidEmail(etEmail.text.toString())
+            etEmailService -> viewModel.checkValidEmailService(
+                etEmailService.text.toString(),
+                etEmailService.isVisible
+            )
 
-            etPasswordConfirm -> tvPasswordConfirmError.text = getMessageValidPasswordConfirm()
+            etPassword -> viewModel.checkValidPassword(tvPasswordError.text.toString())
+            etPasswordConfirm -> viewModel.checkValidPasswordConfirm(
+                etPassword.text.toString(),
+                etPasswordConfirm.text.toString()
+            )
 
             else -> Unit
         }
     }
-
-    private fun getMessageValidName(): String = getString(
-        if (binding.etName.text.toString().isBlank()) {
-            SignUpErrorMessage.NAME
-        } else {
-            SignUpErrorMessage.PASS
-        }.message
-    )
-
-    private fun getMessageValidEmail(): String {
-        val text = binding.etEmail.text.toString()
-        return getString(
-            when {
-                text.isBlank() -> SignUpErrorMessage.EMAIL_BLANK
-                text.includeAt() -> SignUpErrorMessage.EMAIL_AT
-                else -> SignUpErrorMessage.PASS
-            }.message
-        )
-    }
-
-    private fun getMessageValidEmailProvider(): String {
-        val text = binding.etEmailService.text.toString()
-        return if (
-            binding.etEmailService.isVisible
-            && (binding.etEmailService.text.toString().isBlank()
-                    || text.validEmailServiceProvider().not())
-        ) {
-            getString(SignUpErrorMessage.EMAIL_SERVICE_PROVIDER.message)
-        } else {
-            getMessageValidEmail()
-        }
-    }
-
-    private fun getMessageValidPassword(): String {
-        val text = binding.etPassword.text.toString()
-        return getString(
-            when {
-                text.length < 10 -> SignUpErrorMessage.PASSWORD_LENGTH
-
-                text.includeSpecialCharacters()
-                    .not() -> SignUpErrorMessage.PASSWORD_SPECIAL_CHARACTERS
-
-                text.includeUpperCase().not() -> SignUpErrorMessage.PASSWORD_UPPER_CASE
-
-                else -> SignUpErrorMessage.PASS
-            }.message
-        )
-    }
-
-    private fun getMessageValidPasswordConfirm(): String =
-        getString(
-            if (binding.etPassword.text.toString() != binding.etPasswordConfirm.text.toString()) {
-                SignUpErrorMessage.PASSWORD_PASSWORD
-            } else {
-                SignUpErrorMessage.PASS
-            }.message
-        )
-
-    private fun isConfirmButtonEnable() = getMessageValidName().isBlank()
-            && getMessageValidEmail().isBlank()
-            && getMessageValidEmailProvider().isBlank()
-            && getMessageValidPassword().isBlank()
-            && getMessageValidPasswordConfirm().isBlank()
 }

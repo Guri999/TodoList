@@ -5,4 +5,6 @@ sealed interface SignUpEvent {
     data class VisibleEmailService(
         val visible: Boolean
     ) : SignUpEvent
+
+    object ClickConfirmButton : SignUpEvent
 }
