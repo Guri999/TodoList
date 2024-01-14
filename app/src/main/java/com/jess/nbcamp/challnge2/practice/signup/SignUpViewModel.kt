@@ -31,29 +31,32 @@ class SignUpViewModel(
     val emailService: LiveData<List<String>> get() = _emailService
 
     // user
-    private val _user: MutableLiveData<SignUpUserEntity> = MutableLiveData()
-    val user: LiveData<SignUpUserEntity> get() = _user
-
+    private val _uiState: MutableLiveData<SignUpUiState> = MutableLiveData()
+    val uiState: LiveData<SignUpUiState> get() = _uiState
 
     init {
-        _emailService.value = emailServices
-        serUserEntity()
+        initUiState()
     }
 
-    /**
-     * 회원 정보와 이메일 서비스(Spinner)를 선택합니다.
-     */
-    private fun serUserEntity() {
-        userEntity?.let { entity ->
-            val index = emailServices.indexOf(entity.emailService)
-            _user.value = entity.copy(
-                emailPosition = if (index < 0) {
-                    emailServices.lastIndex
-                } else {
-                    index
-                }
-            )
-        }
+    private fun initUiState() {
+        _emailService.value = emailServices
+
+        val index = emailServices.indexOf(userEntity?.emailService)
+        _uiState.value = uiState.value?.copy(
+            name = userEntity?.name,
+            email = userEntity?.email,
+            emailService = userEntity?.emailService,
+            emailPosition = if (index < 0) {
+                emailServices.lastIndex
+            } else {
+                index
+            },
+            button = if (entryType == SignUpEntryType.UPDATE) {
+                R.string.sign_up_update
+            } else {
+                R.string.sign_up_confirm
+            }
+        )
     }
 
     fun onItemSelectedEmailService(position: Int) {

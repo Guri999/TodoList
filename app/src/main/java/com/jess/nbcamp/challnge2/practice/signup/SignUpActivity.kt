@@ -138,12 +138,13 @@ class SignUpActivity : AppCompatActivity() {
             )
         }
 
-        user.observe(this@SignUpActivity) {
+        uiState.observe(this@SignUpActivity) {
             with(binding) {
                 etName.setText(it.name)
                 etEmail.setText(it.email)
                 etEmailService.setText(it.emailService)
                 serviceProvider.setSelection(it.emailPosition)
+                btConfirm.setText(it.button)
             }
         }
     }

@@ -7,6 +7,5 @@ import kotlinx.parcelize.Parcelize
 data class SignUpUserEntity(
     val name: String?,
     val email: String?,
-    val emailService: String?,
-    val emailPosition: Int = 0
+    val emailService: String?
 ) : Parcelable
