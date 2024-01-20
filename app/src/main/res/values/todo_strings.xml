@@ -1,0 +1,16 @@
+<resources>
+
+    <!-- main -->
+    <string name="main_todo_title">TODO LIST</string>
+    <string name="main_fab_todo_create_content_description">할일 추가 버튼</string>
+    <string name="main_tab_todo_title">TODO</string>
+    <string name="main_tab_bookmark_title">BOOKMARK</string>
+
+    <!-- create -->
+    <string name="todo_create_title">CREATE TODO</string>
+    <string name="todo_create_content_title_hint">TITLE</string>
+    <string name="todo_create_content_description_hint">CONTENT</string>
+    <string name="todo_create_submit">CREATE</string>
+    <string name="todo_create_edit">UPDATE</string>
+    <string name="todo_create_delete">DELETE</string>
+</resources>
