@@ -12,7 +12,7 @@ class UserActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.user_activity)
+        setContentView(R.layout.sign_up_user_activity)
 
         findViewById<Button>(R.id.bt_update).setOnClickListener {
             startActivity(
