@@ -16,19 +16,19 @@ class TodoMainViewPagerAdapter(
         TodoMainTab(BookmarkListFragment.newInstance(), R.string.main_tab_bookmark_title),
     )
 
-    fun getFragment(position: Int): Fragment {
-        return fragments[position].fragment
-    }
+    fun getFragment(position: Int): Fragment = fragments[position].fragment
 
-    fun getTitle(position: Int): Int {
-        return fragments[position].title
-    }
+    fun getTodoListFragment(): Fragment? = fragments.find {
+        it.fragment::class.java == TodoListFragment::class.java
+    }?.fragment
 
-    override fun getItemCount(): Int {
-        return fragments.size
-    }
+//    fun getFragment(clazz: Class<out Fragment>): Fragment? =
+//        fragments.find { it.fragment::class.java == clazz }?.fragment
 
-    override fun createFragment(position: Int): Fragment {
-        return fragments[position].fragment
-    }
+    fun getTitle(position: Int): Int = fragments[position].title
+
+    override fun getItemCount(): Int = fragments.size
+
+    override fun createFragment(position: Int): Fragment = fragments[position].fragment
+
 }
