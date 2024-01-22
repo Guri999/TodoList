@@ -20,6 +20,17 @@ class TodoListFragment : Fragment() {
 
     private val viewModel: TodoListViewModel by viewModels()
 
+    private val listAdapter: TodoListAdapter by lazy {
+        TodoListAdapter(
+            onClickItem = { position, item ->
+
+            },
+            onBookmarkChecked = { _, item ->
+
+            }
+        )
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -36,12 +47,12 @@ class TodoListFragment : Fragment() {
     }
 
     private fun initView() = with(binding) {
-
+        list.adapter = listAdapter
     }
 
     private fun initViewModel() = with(viewModel) {
         uiState.observe(viewLifecycleOwner) {
-            // it.list
+            listAdapter.submitList(it.list)
         }
     }
 
