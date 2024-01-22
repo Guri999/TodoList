@@ -1,13 +1,14 @@
-package com.jess.nbcamp.challnge2.assignment.todo.create
+package com.jess.nbcamp.challnge2.assignment.todo.content
 
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.jess.nbcamp.challnge2.assignment.todo.TodoModel
 import com.jess.nbcamp.challnge2.databinding.TodoCreateActivityBinding
 
-class TodoCreateActivity : AppCompatActivity() {
+class TodoContentActivity : AppCompatActivity() {
 
     companion object {
 
@@ -15,7 +16,7 @@ class TodoCreateActivity : AppCompatActivity() {
 
         fun newIntent(
             context: Context
-        ) = Intent(context, TodoCreateActivity::class.java)
+        ) = Intent(context, TodoContentActivity::class.java)
     }
 
     private val binding: TodoCreateActivityBinding by lazy {
@@ -40,7 +41,7 @@ class TodoCreateActivity : AppCompatActivity() {
                 val content = todoContent.text.toString()
                 putExtra(
                     EXTRA_TODO_MODEL,
-                    TodoCreateModel(
+                    TodoModel(
                         title = title,
                         content = content
                     )

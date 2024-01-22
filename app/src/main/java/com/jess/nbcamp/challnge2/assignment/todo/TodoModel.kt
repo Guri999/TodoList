@@ -1,10 +1,10 @@
-package com.jess.nbcamp.challnge2.assignment.todo.create
+package com.jess.nbcamp.challnge2.assignment.todo
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class TodoCreateModel(
+data class TodoModel(
     val title: String?,
     val content: String?,
 ) : Parcelable

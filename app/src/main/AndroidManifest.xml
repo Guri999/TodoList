@@ -25,7 +25,7 @@
         </activity>
 
         <activity
-            android:name=".assignment.todo.create.TodoCreateActivity"
+            android:name=".assignment.todo.content.TodoContentActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
 

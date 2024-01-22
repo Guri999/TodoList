@@ -5,7 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.jess.nbcamp.challnge2.assignment.todo.create.TodoCreateModel
+import androidx.fragment.app.viewModels
+import com.jess.nbcamp.challnge2.assignment.todo.TodoModel
 import com.jess.nbcamp.challnge2.databinding.TodoListFragmentBinding
 
 class TodoListFragment : Fragment() {
@@ -16,6 +17,8 @@ class TodoListFragment : Fragment() {
 
     private var _binding: TodoListFragmentBinding? = null
     private val binding get() = _binding!!
+
+    private val viewModel: TodoListViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -36,8 +39,10 @@ class TodoListFragment : Fragment() {
 
     }
 
-    private fun initViewModel() {
-
+    private fun initViewModel() = with(viewModel) {
+        uiState.observe(viewLifecycleOwner) {
+            // it.list
+        }
     }
 
     override fun onDestroyView() {
@@ -45,7 +50,7 @@ class TodoListFragment : Fragment() {
         super.onDestroyView()
     }
 
-    fun addTodoItem(todoModel: TodoCreateModel?) {
-
+    fun addTodoItem(model: TodoModel?) {
+        viewModel.addTodoItem(model)
     }
 }
