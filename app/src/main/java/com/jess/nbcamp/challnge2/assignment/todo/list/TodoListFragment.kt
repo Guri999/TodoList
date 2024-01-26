@@ -1,12 +1,15 @@
 package com.jess.nbcamp.challnge2.assignment.todo.list
 
+import android.app.Activity
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import com.jess.nbcamp.challnge2.assignment.todo.TodoModel
+import com.jess.nbcamp.challnge2.assignment.todo.TodoEntity
+import com.jess.nbcamp.challnge2.assignment.todo.content.TodoContentActivity
 import com.jess.nbcamp.challnge2.databinding.TodoListFragmentBinding
 
 class TodoListFragment : Fragment() {
@@ -20,12 +23,22 @@ class TodoListFragment : Fragment() {
 
     private val viewModel: TodoListViewModel by viewModels()
 
+    private val updateTodoLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+
+            }
+        }
+
     private val listAdapter: TodoListAdapter by lazy {
         TodoListAdapter(
             onClickItem = { position, item ->
-
+                viewModel.onClickItem(
+                    position,
+                    item as TodoListItem.Item
+                )
             },
-            onBookmarkChecked = { _, item ->
+            onBookmarkChecked = { position, item ->
 
             }
         )
@@ -54,14 +67,26 @@ class TodoListFragment : Fragment() {
         uiState.observe(viewLifecycleOwner) {
             listAdapter.submitList(it.list)
         }
+
+        event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is TodoListEvent.OpenContent -> updateTodoLauncher.launch(
+                    TodoContentActivity.newIntentUpdate(
+                        requireContext(),
+                        event.position,
+                        event.item
+                    )
+                )
+            }
+        }
+    }
+
+    fun addTodoItem(model: TodoEntity?) {
+        viewModel.addTodoItem(model)
     }
 
     override fun onDestroyView() {
         _binding = null
         super.onDestroyView()
-    }
-
-    fun addTodoItem(model: TodoModel?) {
-        viewModel.addTodoItem(model)
     }
 }

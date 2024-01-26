@@ -8,7 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayoutMediator
 import com.jess.nbcamp.challnge2.assignment.todo.content.TodoContentActivity
-import com.jess.nbcamp.challnge2.assignment.todo.TodoModel
+import com.jess.nbcamp.challnge2.assignment.todo.TodoEntity
 import com.jess.nbcamp.challnge2.assignment.todo.list.TodoListFragment
 import com.jess.nbcamp.challnge2.databinding.TodoMainActivityBinding
 
@@ -27,12 +27,12 @@ class TodoMainActivity : AppCompatActivity() {
             if (result.resultCode == Activity.RESULT_OK) {
                 val todoModel = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                     result.data?.getParcelableExtra(
-                        TodoContentActivity.EXTRA_TODO_MODEL,
-                        TodoModel::class.java
+                        TodoContentActivity.EXTRA_TODO_ENTITY,
+                        TodoEntity::class.java
                     )
                 } else {
                     result.data?.getParcelableExtra(
-                        TodoContentActivity.EXTRA_TODO_MODEL
+                        TodoContentActivity.EXTRA_TODO_ENTITY
                     )
                 }
 
@@ -71,7 +71,7 @@ class TodoMainActivity : AppCompatActivity() {
         // fab
         fabCreateTodo.setOnClickListener {
             createTodoLauncher.launch(
-                TodoContentActivity.newIntent(this@TodoMainActivity)
+                TodoContentActivity.newIntentCreate(this@TodoMainActivity)
             )
         }
     }

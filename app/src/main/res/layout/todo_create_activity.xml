@@ -22,19 +22,19 @@
         android:orientation="vertical"
         android:paddingHorizontal="16dp"
         android:paddingTop="16dp"
-        app:layout_constraintBottom_toTopOf="@id/submit"
+        app:layout_constraintBottom_toTopOf="@id/bt_submit"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tool_bar">
 
         <EditText
-            android:id="@+id/todo_title"
+            android:id="@+id/et_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/todo_create_content_title_hint" />
 
         <EditText
-            android:id="@+id/todo_content"
+            android:id="@+id/et_content"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
@@ -42,7 +42,7 @@
     </LinearLayout>
 
     <Button
-        android:id="@+id/submit"
+        android:id="@+id/bt_submit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
