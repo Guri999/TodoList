@@ -18,16 +18,18 @@ class TodoListAdapter(
         override fun areItemsTheSame(
             oldItem: TodoListItem,
             newItem: TodoListItem
-        ): Boolean {
-            return oldItem.id == newItem.id
+        ): Boolean = if (oldItem is TodoListItem.Item && newItem is TodoListItem.Item) {
+            oldItem.id == newItem.id
+        } else {
+            oldItem == newItem
         }
+
 
         override fun areContentsTheSame(
             oldItem: TodoListItem,
             newItem: TodoListItem
-        ): Boolean {
-            return oldItem == newItem
-        }
+        ): Boolean = oldItem == newItem
+
     }
 ) {
 

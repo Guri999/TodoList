@@ -11,6 +11,7 @@ import com.jess.camp.util.SingleLiveEvent
 import com.jess.nbcamp.challnge2.assignment.todo.TodoEntity
 import com.jess.nbcamp.challnge2.assignment.todo.content.TodoContentConstant.EXTRA_TODO_ENTITY
 import com.jess.nbcamp.challnge2.assignment.todo.content.TodoContentConstant.EXTRA_TODO_ENTRY_TYPE
+import java.util.UUID
 
 class TodoContentViewModel(
     private val savedStateHandle: SavedStateHandle
@@ -43,6 +44,18 @@ class TodoContentViewModel(
         content: String,
     ) {
         _event.value = TodoContentEvent.Create(
+            id = UUID.randomUUID().toString(),
+            title = title,
+            content = content
+        )
+    }
+
+    fun onClickUpdate(
+        title: String,
+        content: String,
+    ) {
+        _event.value = TodoContentEvent.Update(
+            id = entity?.id,
             title = title,
             content = content
         )

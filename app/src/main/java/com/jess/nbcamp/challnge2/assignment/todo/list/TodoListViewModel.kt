@@ -5,11 +5,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.jess.camp.util.SingleLiveEvent
 import com.jess.nbcamp.challnge2.assignment.todo.TodoEntity
-import java.util.concurrent.atomic.AtomicLong
 
 class TodoListViewModel : ViewModel() {
-
-    private val id = AtomicLong()
 
     private val _uiState: MutableLiveData<TodoListUiState> =
         MutableLiveData(TodoListUiState.init())
@@ -24,10 +21,10 @@ class TodoListViewModel : ViewModel() {
         model: TodoEntity?
     ) {
 
-        fun createTodoItem(model: TodoEntity): TodoListItem = TodoListItem.Item(
-            id = id.getAndIncrement(),
-            title = model.title,
-            content = model.content
+        fun createTodoItem(entity: TodoEntity): TodoListItem = TodoListItem.Item(
+            id = entity.id,
+            title = entity.title,
+            content = entity.content
         )
 
         if (model == null) {
@@ -49,6 +46,7 @@ class TodoListViewModel : ViewModel() {
             is TodoListItem.Item -> TodoListEvent.OpenContent(
                 position,
                 TodoEntity(
+                    id = item.id,
                     title = item.title,
                     content = item.content
                 )

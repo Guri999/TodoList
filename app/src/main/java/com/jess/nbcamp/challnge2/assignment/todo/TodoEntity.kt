@@ -5,6 +5,7 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class TodoEntity(
+    val id: String?,
     val title: String?,
     val content: String?
 ) : Parcelable

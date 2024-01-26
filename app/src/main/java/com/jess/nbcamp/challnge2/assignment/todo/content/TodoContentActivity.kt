@@ -1,6 +1,5 @@
 package com.jess.nbcamp.challnge2.assignment.todo.content
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -10,6 +9,7 @@ import androidx.core.view.isVisible
 import com.jess.nbcamp.challnge2.assignment.todo.TodoEntity
 import com.jess.nbcamp.challnge2.assignment.todo.content.TodoContentConstant.EXTRA_TODO_ENTITY
 import com.jess.nbcamp.challnge2.assignment.todo.content.TodoContentConstant.EXTRA_TODO_ENTRY_TYPE
+import com.jess.nbcamp.challnge2.assignment.todo.content.TodoContentConstant.EXTRA_TODO_ID
 import com.jess.nbcamp.challnge2.assignment.todo.content.TodoContentConstant.EXTRA_TODO_POSITION
 import com.jess.nbcamp.challnge2.databinding.TodoCreateActivityBinding
 
@@ -76,13 +76,50 @@ class TodoContentActivity : AppCompatActivity() {
         event.observe(this@TodoContentActivity) {
             when (it) {
                 is TodoContentEvent.Create -> {
-                    setResult(Activity.RESULT_OK, Intent().apply {
+                    setResult(RESULT_OK, Intent().apply {
+                        putExtra(
+                            EXTRA_TODO_ENTRY_TYPE,
+                            TodoContentEntryType.CREATE
+                        )
                         putExtra(
                             EXTRA_TODO_ENTITY,
                             TodoEntity(
+                                id = it.id,
                                 title = it.title,
                                 content = it.content
                             )
+                        )
+                    })
+                    finish()
+                }
+
+                is TodoContentEvent.Update -> {
+                    setResult(RESULT_OK, Intent().apply {
+                        putExtra(
+                            EXTRA_TODO_ENTRY_TYPE,
+                            TodoContentEntryType.UPDATE
+                        )
+                        putExtra(
+                            EXTRA_TODO_ENTITY,
+                            TodoEntity(
+                                id = it.id,
+                                title = it.title,
+                                content = it.content
+                            )
+                        )
+                    })
+                    finish()
+                }
+
+                is TodoContentEvent.Delete -> {
+                    setResult(RESULT_OK, Intent().apply {
+                        putExtra(
+                            EXTRA_TODO_ENTRY_TYPE,
+                            TodoContentEntryType.DELETE
+                        )
+                        putExtra(
+                            EXTRA_TODO_ID,
+                            it.id
                         )
                     })
                     finish()
@@ -101,6 +138,17 @@ class TodoContentActivity : AppCompatActivity() {
                 etTitle.text.toString(),
                 etContent.text.toString()
             )
+        }
+
+        btUpdate.setOnClickListener {
+            viewModel.onClickUpdate(
+                etTitle.text.toString(),
+                etContent.text.toString()
+            )
+        }
+
+        btDelete.setOnClickListener {
+
         }
     }
 
