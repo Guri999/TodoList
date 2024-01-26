@@ -3,20 +3,19 @@ package com.jess.nbcamp.challnge2.assignment.todo.content
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import com.jess.nbcamp.challnge2.assignment.todo.TodoEntity
+import com.jess.nbcamp.challnge2.assignment.todo.content.TodoContentConstant.EXTRA_TODO_ENTITY
+import com.jess.nbcamp.challnge2.assignment.todo.content.TodoContentConstant.EXTRA_TODO_ENTRY_TYPE
+import com.jess.nbcamp.challnge2.assignment.todo.content.TodoContentConstant.EXTRA_TODO_POSITION
 import com.jess.nbcamp.challnge2.databinding.TodoCreateActivityBinding
 
 class TodoContentActivity : AppCompatActivity() {
 
     companion object {
-
-        const val EXTRA_TODO_ENTRY_TYPE = "extra_todo_entry_type"
-        const val EXTRA_TODO_POSITION = "extra_todo_position"
-        const val EXTRA_TODO_ENTITY = "extra_todo_entity"
 
         fun newIntentCreate(
             context: Context
@@ -40,25 +39,10 @@ class TodoContentActivity : AppCompatActivity() {
     }
 
     private val viewModel: TodoContentViewModel by viewModels {
-        TodoContentViewModelFactory(
-            entryType = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                intent?.getParcelableExtra(
-                    EXTRA_TODO_ENTRY_TYPE,
-                    TodoContentEntryType::class.java
-                )
-            } else {
-                intent?.getSerializableExtra(EXTRA_TODO_ENTRY_TYPE) as? TodoContentEntryType
-            } ?: TodoContentEntryType.CREATE,
-            entity = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                intent?.getParcelableExtra(
-                    EXTRA_TODO_ENTITY,
-                    TodoEntity::class.java
-                )
-            } else {
-                intent?.getParcelableExtra(
-                    EXTRA_TODO_ENTITY
-                ) as? TodoEntity
-            }
+        TodoContentSavedStateViewModelFactory(
+            TodoContentViewModelFactory(),
+            this,
+            intent.extras
         )
     }
 
@@ -73,6 +57,37 @@ class TodoContentActivity : AppCompatActivity() {
         uiState.observe(this@TodoContentActivity) {
             binding.etTitle.setText(it.title)
             binding.etContent.setText(it.content)
+
+            // 버튼 처리
+            when (it.button) {
+                TodoContentButtonUiState.Create -> {
+                    binding.btCreate.isVisible = true
+                }
+
+                TodoContentButtonUiState.Update -> {
+                    binding.btUpdate.isVisible = true
+                    binding.btDelete.isVisible = true
+                }
+
+                else -> Unit
+            }
+        }
+
+        event.observe(this@TodoContentActivity) {
+            when (it) {
+                is TodoContentEvent.Create -> {
+                    setResult(Activity.RESULT_OK, Intent().apply {
+                        putExtra(
+                            EXTRA_TODO_ENTITY,
+                            TodoEntity(
+                                title = it.title,
+                                content = it.content
+                            )
+                        )
+                    })
+                    finish()
+                }
+            }
         }
     }
 
@@ -81,21 +96,11 @@ class TodoContentActivity : AppCompatActivity() {
             finish()
         }
 
-        btSubmit.setOnClickListener {
-            val intent = Intent().apply {
-                val title = etTitle.text.toString()
-                val content = etContent.text.toString()
-                putExtra(
-                    EXTRA_TODO_ENTITY,
-                    TodoEntity(
-                        title = title,
-                        content = content
-                    )
-                )
-            }
-
-            setResult(Activity.RESULT_OK, intent)
-            finish()
+        btCreate.setOnClickListener {
+            viewModel.onClickCreate(
+                etTitle.text.toString(),
+                etContent.text.toString()
+            )
         }
     }
 
