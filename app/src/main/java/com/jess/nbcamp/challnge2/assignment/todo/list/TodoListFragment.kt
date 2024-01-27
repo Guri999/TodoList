@@ -58,19 +58,7 @@ class TodoListFragment : Fragment() {
     }
 
     private fun setAdapter() {
-        _adapter = TodoListAdapter { view, _, item ->
-            when (view) {
-                is SwitchCompat -> item.bookmark
-                else -> {
-                    val intent = TodoContentActivity.newIntent(
-                        context = requireContext(),
-                        entryType = TodoContentType.UPDATE,
-                        todoModel = item
-                    )
-                    updateToLauncher.launch(intent)
-                }
-            }
-        }
+        _adapter = TodoListAdapter(this::onClickItem)
         binding.todoList.adapter = adapter
         binding.todoList.layoutManager = LinearLayoutManager(requireContext())
     }
@@ -114,6 +102,21 @@ class TodoListFragment : Fragment() {
         }
         return todo
     }
+
+    private fun onClickItem(view: View, position: Int, item: TodoModel) {
+        when (view) {
+            is SwitchCompat -> item.bookmark
+            else -> {
+                val intent = TodoContentActivity.newIntent(
+                    context = requireContext(),
+                    entryType = TodoContentType.UPDATE,
+                    todoModel = item
+                )
+                updateToLauncher.launch(intent)
+            }
+        }
+    }
+
     override fun onDestroyView() {
         _binding = null
         super.onDestroyView()
