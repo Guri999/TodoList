@@ -1,15 +1,22 @@
 package com.jess.nbcamp.challnge2.assignment.todo.list
 
 import android.app.Activity
+import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.IntentCompat
+import androidx.core.os.BundleCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.jess.nbcamp.challnge2.assignment.todo.TodoEntity
 import com.jess.nbcamp.challnge2.assignment.todo.content.TodoContentActivity
+import com.jess.nbcamp.challnge2.assignment.todo.content.TodoContentConstant.EXTRA_TODO_ENTITY
+import com.jess.nbcamp.challnge2.assignment.todo.content.TodoContentConstant.EXTRA_TODO_ENTRY_TYPE
+import com.jess.nbcamp.challnge2.assignment.todo.content.TodoContentEntryType
 import com.jess.nbcamp.challnge2.databinding.TodoListFragmentBinding
 
 class TodoListFragment : Fragment() {
@@ -27,6 +34,27 @@ class TodoListFragment : Fragment() {
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
 
+                // Entry Type
+                val entryType = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    result.data?.getSerializableExtra(
+                        EXTRA_TODO_ENTRY_TYPE,
+                        TodoContentEntryType::class.java
+                    )
+                } else {
+                    result.data?.getSerializableExtra(EXTRA_TODO_ENTRY_TYPE) as TodoContentEntryType
+                }
+
+                // Entity
+                val entity = IntentCompat.getParcelableExtra(
+                    result.data ?: Intent(),
+                    EXTRA_TODO_ENTITY,
+                    TodoEntity::class.java
+                )
+
+                viewModel.updateTodoItem(
+                    entryType,
+                    entity
+                )
             }
         }
 
@@ -35,7 +63,7 @@ class TodoListFragment : Fragment() {
             onClickItem = { position, item ->
                 viewModel.onClickItem(
                     position,
-                    item as TodoListItem.Item
+                    item
                 )
             },
             onBookmarkChecked = { position, item ->

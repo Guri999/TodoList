@@ -1,5 +1,7 @@
 package com.jess.nbcamp.challnge2.assignment.todo.content
 
+import kotlinx.parcelize.Parcelize
+
 sealed interface TodoContentEvent {
     data class Create(
         val id: String,
@@ -14,6 +16,6 @@ sealed interface TodoContentEvent {
     ) : TodoContentEvent
 
     data class Delete(
-        val id: String,
+        val id: String?,
     ) : TodoContentEvent
 }

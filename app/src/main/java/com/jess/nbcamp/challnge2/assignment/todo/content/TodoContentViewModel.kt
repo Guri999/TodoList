@@ -60,6 +60,12 @@ class TodoContentViewModel(
             content = content
         )
     }
+
+    fun onClickDelete() {
+        _event.value = TodoContentEvent.Delete(
+            id = entity?.id
+        )
+    }
 }
 
 class TodoContentViewModelFactory {

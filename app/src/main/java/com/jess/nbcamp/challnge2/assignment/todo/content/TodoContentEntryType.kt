@@ -1,6 +1,6 @@
 package com.jess.nbcamp.challnge2.assignment.todo.content
 
-enum class TodoContentEntryType {
+enum class TodoContentEntryType  {
     CREATE, UPDATE, DELETE;
 
     companion object {

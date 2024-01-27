@@ -9,7 +9,6 @@ import androidx.core.view.isVisible
 import com.jess.nbcamp.challnge2.assignment.todo.TodoEntity
 import com.jess.nbcamp.challnge2.assignment.todo.content.TodoContentConstant.EXTRA_TODO_ENTITY
 import com.jess.nbcamp.challnge2.assignment.todo.content.TodoContentConstant.EXTRA_TODO_ENTRY_TYPE
-import com.jess.nbcamp.challnge2.assignment.todo.content.TodoContentConstant.EXTRA_TODO_ID
 import com.jess.nbcamp.challnge2.assignment.todo.content.TodoContentConstant.EXTRA_TODO_POSITION
 import com.jess.nbcamp.challnge2.databinding.TodoCreateActivityBinding
 
@@ -118,8 +117,10 @@ class TodoContentActivity : AppCompatActivity() {
                             TodoContentEntryType.DELETE
                         )
                         putExtra(
-                            EXTRA_TODO_ID,
-                            it.id
+                            EXTRA_TODO_ENTITY,
+                            TodoEntity(
+                                id = it.id,
+                            )
                         )
                     })
                     finish()
@@ -148,7 +149,7 @@ class TodoContentActivity : AppCompatActivity() {
         }
 
         btDelete.setOnClickListener {
-
+            viewModel.onClickDelete()
         }
     }
 
