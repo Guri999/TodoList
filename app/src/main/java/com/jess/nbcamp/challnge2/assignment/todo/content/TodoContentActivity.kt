@@ -51,14 +51,6 @@ class TodoContentActivity : AppCompatActivity() {
         }
     }
 
-    private val todoType: TodoContentType? by lazy {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            intent.getParcelableExtra(EXTRA_TODO_TYPE, TodoContentType::class.java)
-        } else {
-            intent.getParcelableExtra(EXTRA_TODO_TYPE)
-        }
-    }
-
     private val entryType: TodoContentType by lazy {
         TodoContentType.getEntryType(intent.getIntExtra(EXTRA_TODO_ENTRY, TodoContentType.CREATE.ordinal))
     }
