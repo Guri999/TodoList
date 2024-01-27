@@ -52,10 +52,15 @@ class TodoContentActivity : AppCompatActivity() {
     }
 
     private val entryType: TodoContentType by lazy {
-        TodoContentType.getEntryType(intent.getIntExtra(EXTRA_TODO_ENTRY, TodoContentType.CREATE.ordinal))
+        TodoContentType.getEntryType(
+            intent.getIntExtra(
+                EXTRA_TODO_ENTRY,
+                TodoContentType.CREATE.ordinal
+            )
+        )
     }
 
-    private val viewModel: TodoContentViewModel by viewModels{
+    private val viewModel: TodoContentViewModel by viewModels {
         TodoContentViewModelFactory(
             entryType,
             todoModel
@@ -79,31 +84,19 @@ class TodoContentActivity : AppCompatActivity() {
             when (entryType) {
                 TodoContentType.UPDATE -> {
                     val updatedTodoModel = todoModel?.copy(title = title, content = content)
-                    val intent = Intent().apply {
-                        putExtra(EXTRA_TODO_MODEL, updatedTodoModel)
-                        putExtra(EXTRA_TODO_TYPE, TodoContentType.UPDATE)
-                    }
-                    setResult(Activity.RESULT_OK, intent)
+                    setResultData(updatedTodoModel, TodoContentType.UPDATE)
                 }
+
                 else -> {
                     val newTodoModel = TodoModel(title = title, content = content)
-                    val intent = Intent().apply {
-                        putExtra(EXTRA_TODO_MODEL, newTodoModel)
-                    }
-                    setResult(Activity.RESULT_OK, intent)
+                    setResultData(newTodoModel, TodoContentType.CREATE)
                 }
             }
-            finish()
         }
 
         delete.setOnClickListener {
             val deleteTodoModel = todoModel
-            val intent = Intent().apply {
-                putExtra(EXTRA_TODO_MODEL, deleteTodoModel)
-                putExtra(EXTRA_TODO_TYPE, TodoContentType.DELETE)
-            }
-            setResult(Activity.RESULT_OK, intent)
-            finish()
+            setResultData(deleteTodoModel, TodoContentType.DELETE)
         }
 
 
@@ -114,6 +107,16 @@ class TodoContentActivity : AppCompatActivity() {
             submit.setText(R.string.todo_create_edit)
         }
 
+    }
+
+
+    private fun setResultData(todoModel: TodoModel?, entryType: TodoContentType) {
+        val intent = Intent().apply {
+            putExtra(EXTRA_TODO_MODEL, todoModel)
+            putExtra(EXTRA_TODO_TYPE, entryType)
+        }
+        setResult(Activity.RESULT_OK, intent)
+        finish()
     }
 
 }
