@@ -15,7 +15,7 @@ import com.jess.nbcamp.challnge2.provider.ResourceProviderImpl
 
 class SignUpViewModel(
     private val resourceProvider: ResourceProvider,
-    private val entryType: SignUpEntryType,
+    private val entryType: SignUpEntryType?,
     private val userEntity: SignUpUserEntity?
 ) : ViewModel() {
 

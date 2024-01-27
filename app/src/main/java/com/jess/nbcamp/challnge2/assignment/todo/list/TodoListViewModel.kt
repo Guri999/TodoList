@@ -14,7 +14,7 @@ class TodoListViewModel : ViewModel() {
     fun addTodoItem(
         model: TodoModel?
     ) {
-        if (model == null) {
+        if (model?.title == null && model?.content == null) {
             return
         }
 
@@ -24,4 +24,24 @@ class TodoListViewModel : ViewModel() {
             }
         )
     }
+
+    fun updateToItem(model: TodoModel) {
+        val currentList = _uiState.value?.list.orEmpty()
+        val updatedList = currentList.map { todoModel ->
+            if (todoModel.key == model.key) model.copy() else todoModel.copy()
+        }
+        _uiState.value = _uiState.value?.copy(
+            list = updatedList.toMutableList()
+        )
+    }
+
+    fun deleteToItem(model: TodoModel) {
+        val currentList = _uiState.value?.list.orEmpty()
+        val updatedList = currentList.filter { it.key != model.key }
+
+        _uiState.value = _uiState.value?.copy(
+            list = updatedList
+        )
+    }
+
 }

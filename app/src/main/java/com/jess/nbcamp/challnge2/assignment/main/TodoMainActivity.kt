@@ -14,7 +14,7 @@ import com.jess.nbcamp.challnge2.databinding.TodoMainActivityBinding
 
 class TodoMainActivity : AppCompatActivity() {
 
-    private val binding: TodoMainActivityBinding by lazy {
+    private val binding by lazy {
         TodoMainActivityBinding.inflate(layoutInflater)
     }
 
