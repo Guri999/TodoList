@@ -43,5 +43,4 @@ class TodoListViewModel : ViewModel() {
             list = updatedList
         )
     }
-
 }
