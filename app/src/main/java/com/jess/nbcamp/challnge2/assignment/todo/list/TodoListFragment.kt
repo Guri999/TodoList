@@ -83,12 +83,9 @@ class TodoListFragment : Fragment() {
         }
         val model = getTodoModeResult(result)
 
-        when (entryType){
-            TodoContentType.UPDATE -> model?.let { updateToItem(it) }
-            TodoContentType.DELETE -> model?.let { deleteToItem(it) }
-            else -> model?.let { addTodoItem(it) }
-        }
+        viewModel.handleToItem(entryType?.ordinal ?: TodoContentType.CREATE.ordinal, model)
     }
+
     private fun getTodoModeResult(result: ActivityResult): TodoModel? {
         val todo = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             result.data?.getParcelableExtra(
@@ -124,13 +121,5 @@ class TodoListFragment : Fragment() {
 
     fun addTodoItem(model: TodoModel?) {
         viewModel.addTodoItem(model)
-    }
-
-    private fun updateToItem(model: TodoModel) {
-        viewModel.updateToItem(model)
-    }
-
-    private fun deleteToItem(model: TodoModel) {
-        viewModel.deleteToItem(model)
     }
 }
