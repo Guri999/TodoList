@@ -11,7 +11,6 @@ class TodoMainViewModel : ViewModel() {
     private val _bookmarkEvent: MutableLiveData<BookmarkEvent> = MutableLiveData() //SingleLiveEvent
     val bookmarkEvent: LiveData<BookmarkEvent> get() = _bookmarkEvent
 
-
     fun createBookmark(item: TodoListItem) {
         _bookmarkEvent.value = BookmarkEvent(BookmarkEventState.Create, item)
     }

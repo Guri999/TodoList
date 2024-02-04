@@ -58,29 +58,6 @@ class TodoListFragment : Fragment() {
                     entryType,
                     entity
                 )
-                if (entity != null) {
-                    when (entryType) {
-                        TodoContentEntryType.UPDATE -> sharedViewModel.updateBookmark(
-                            item = TodoListItem.Item(
-                                id = entity.id,
-                                title = entity.title,
-                                content = entity.content,
-                                isBookmark = true
-                            )
-                        )
-
-                        TodoContentEntryType.DELETE -> sharedViewModel.deleteBookmark(
-                            item = TodoListItem.Item(
-                                id = entity.id,
-                                title = entity.title,
-                                content = entity.content,
-                                isBookmark = true
-                            )
-                        )
-
-                        else -> {}
-                    }
-                }
             }
         }
 
@@ -143,6 +120,14 @@ class TodoListFragment : Fragment() {
                         event.item
                     )
                 )
+            }
+        }
+
+        updateItem.observe(viewLifecycleOwner) { (event, item) ->
+            when (event) {
+                TodoContentEntryType.UPDATE -> sharedViewModel.updateBookmark(item)
+                TodoContentEntryType.DELETE -> sharedViewModel.deleteBookmark(item)
+                TodoContentEntryType.CREATE -> null
             }
         }
 

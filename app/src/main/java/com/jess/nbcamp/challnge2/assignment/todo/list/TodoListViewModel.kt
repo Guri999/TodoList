@@ -18,6 +18,9 @@ class TodoListViewModel : ViewModel() {
     private val _event: SingleLiveEvent<TodoListEvent> = SingleLiveEvent()
     val event: LiveData<TodoListEvent> get() = _event
 
+    private val _updateItem: MutableLiveData<Pair<TodoContentEntryType,TodoListItem>> = MutableLiveData()
+    val updateItem: LiveData<Pair<TodoContentEntryType,TodoListItem>> get() = _updateItem
+
 
     fun addTodoItem(
         model: TodoEntity?
@@ -73,11 +76,18 @@ class TodoListViewModel : ViewModel() {
                             entity,
                             isBookmark
                         )
+                        if (isBookmark){
+                            _updateItem.value = Pair(entryType,list[position])
+                        }
                     }
                 )
             }
 
             TodoContentEntryType.DELETE -> {
+                val itemToRemove = mutableList.find { it is TodoListItem.Item && it.id == entity.id }
+                if (itemToRemove != null) {
+                    _updateItem.value = Pair(TodoContentEntryType.DELETE, itemToRemove)
+                }
                 uiState.value?.copy(
                     list = mutableList.apply {
                         removeIf {
