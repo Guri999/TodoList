@@ -5,6 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import com.jess.nbcamp.challnge2.assignment.main.TodoMainViewModel
 import com.jess.nbcamp.challnge2.databinding.BookmarkListFragmentBinding
 
 class BookmarkListFragment : Fragment() {
@@ -15,6 +17,22 @@ class BookmarkListFragment : Fragment() {
 
     private var _binding: BookmarkListFragmentBinding? = null
     private val binding get() = _binding!!
+
+    private val sharedViewModel: TodoMainViewModel by activityViewModels()
+
+    private val listAdapter by lazy {
+        BookmarkListAdapter(
+            onClickItem = { position, item ->
+                Unit
+            },
+            onBookmarkChecked = { position, item ->
+                sharedViewModel.onBookmarkChecked(
+                    position,
+                    item
+                )
+            }
+        )
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -32,11 +50,13 @@ class BookmarkListFragment : Fragment() {
     }
 
     private fun initView() = with(binding) {
-
+        todoList.adapter = listAdapter
     }
 
     private fun initViewModel() {
-
+        sharedViewModel.bookmarkList.observe(viewLifecycleOwner) {
+            listAdapter.submitList(it.list)
+        }
     }
 
     override fun onDestroyView() {

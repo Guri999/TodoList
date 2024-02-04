@@ -11,7 +11,9 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.IntentCompat
 import androidx.core.os.BundleCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import com.jess.nbcamp.challnge2.assignment.main.TodoMainViewModel
 import com.jess.nbcamp.challnge2.assignment.todo.TodoEntity
 import com.jess.nbcamp.challnge2.assignment.todo.content.TodoContentActivity
 import com.jess.nbcamp.challnge2.assignment.todo.content.TodoContentConstant.EXTRA_TODO_ENTITY
@@ -29,6 +31,8 @@ class TodoListFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val viewModel: TodoListViewModel by viewModels()
+
+    private val sharedViewModel: TodoMainViewModel by activityViewModels()
 
     private val updateTodoLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -51,7 +55,7 @@ class TodoListFragment : Fragment() {
                     TodoEntity::class.java
                 )
 
-                viewModel.updateTodoItem(
+                sharedViewModel.updateTodoItem(
                     entryType,
                     entity
                 )
@@ -67,7 +71,10 @@ class TodoListFragment : Fragment() {
                 )
             },
             onBookmarkChecked = { position, item ->
-
+                sharedViewModel.onBookmarkChecked(
+                    position,
+                    item
+                )
             }
         )
     }
@@ -91,12 +98,13 @@ class TodoListFragment : Fragment() {
         list.adapter = listAdapter
     }
 
-    private fun initViewModel() = with(viewModel) {
+    private fun initViewModel() = with(sharedViewModel) {
         uiState.observe(viewLifecycleOwner) {
             listAdapter.submitList(it.list)
+            setBookmarkList()
         }
 
-        event.observe(viewLifecycleOwner) { event ->
+        viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is TodoListEvent.OpenContent -> updateTodoLauncher.launch(
                     TodoContentActivity.newIntentUpdate(
@@ -110,7 +118,7 @@ class TodoListFragment : Fragment() {
     }
 
     fun addTodoItem(model: TodoEntity?) {
-        viewModel.addTodoItem(model)
+        sharedViewModel.addTodoItem(model)
     }
 
     override fun onDestroyView() {
