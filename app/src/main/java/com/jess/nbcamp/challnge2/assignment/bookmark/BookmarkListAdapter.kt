@@ -87,17 +87,12 @@ class BookmarkListAdapter(
             }
 
             bookmark.setOnClickListener {
-                if (item.isBookmark != bookmark.isChecked) {
-                    onBookmarkChecked(
-                        adapterPosition,
-                        TodoListItem.Item(
-                            id = item.id,
-                            title = item.title,
-                            content = item.content,
-                            isBookmark = bookmark.isChecked
-                        )
+                onBookmarkChecked(
+                    adapterPosition,
+                    item.copy(
+                        isBookmark = bookmark.isChecked
                     )
-                }
+                )
             }
         }
 

@@ -85,7 +85,6 @@ class TodoListAdapter(
 
             // 북마크 클릭
             bookmark.setOnClickListener {
-                if (item.isBookmark != bookmark.isChecked) {
                     onBookmarkChecked(
                         adapterPosition,
                         item.copy(
@@ -93,7 +92,7 @@ class TodoListAdapter(
                         )
                     )
                 }
-            }
+
         }
     }
 

@@ -9,7 +9,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.IntentCompat
-import androidx.core.os.BundleCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -55,10 +54,33 @@ class TodoListFragment : Fragment() {
                     TodoEntity::class.java
                 )
 
-                sharedViewModel.updateTodoItem(
+                viewModel.updateTodoItem(
                     entryType,
                     entity
                 )
+                if (entity != null) {
+                    when (entryType) {
+                        TodoContentEntryType.UPDATE -> sharedViewModel.updateBookmark(
+                            item = TodoListItem.Item(
+                                id = entity.id,
+                                title = entity.title,
+                                content = entity.content,
+                                isBookmark = true
+                            )
+                        )
+
+                        TodoContentEntryType.DELETE -> sharedViewModel.deleteBookmark(
+                            item = TodoListItem.Item(
+                                id = entity.id,
+                                title = entity.title,
+                                content = entity.content,
+                                isBookmark = true
+                            )
+                        )
+
+                        else -> {}
+                    }
+                }
             }
         }
 
@@ -71,10 +93,19 @@ class TodoListFragment : Fragment() {
                 )
             },
             onBookmarkChecked = { position, item ->
-                sharedViewModel.onBookmarkChecked(
-                    position,
-                    item
-                )
+                when (item) {
+                    is TodoListItem.Item -> {
+                        if (item.isBookmark) {
+                            sharedViewModel.createBookmark(
+                                item
+                            )
+                        } else {
+                            sharedViewModel.deleteBookmark(
+                                item
+                            )
+                        }
+                    }
+                }
             }
         )
     }
@@ -98,13 +129,12 @@ class TodoListFragment : Fragment() {
         list.adapter = listAdapter
     }
 
-    private fun initViewModel() = with(sharedViewModel) {
+    private fun initViewModel() = with(viewModel) {
         uiState.observe(viewLifecycleOwner) {
             listAdapter.submitList(it.list)
-            setBookmarkList()
         }
 
-        viewModel.event.observe(viewLifecycleOwner) { event ->
+        event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is TodoListEvent.OpenContent -> updateTodoLauncher.launch(
                     TodoContentActivity.newIntentUpdate(
@@ -115,10 +145,14 @@ class TodoListFragment : Fragment() {
                 )
             }
         }
+
+        sharedViewModel.bookmarkEvent.observe(viewLifecycleOwner) { event ->
+            setBookmarkItem(event.entryType, event.item)
+        }
     }
 
     fun addTodoItem(model: TodoEntity?) {
-        sharedViewModel.addTodoItem(model)
+        viewModel.addTodoItem(model)
     }
 
     override fun onDestroyView() {

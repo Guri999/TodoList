@@ -1,4 +1,4 @@
-package com.jess.nbcamp.challnge2.assignment.todo.list
+package com.jess.nbcamp.challnge2.assignment.bookmark
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -7,44 +7,24 @@ import com.jess.camp.util.SingleLiveEvent
 import com.jess.nbcamp.challnge2.assignment.main.BookmarkEventState
 import com.jess.nbcamp.challnge2.assignment.todo.TodoEntity
 import com.jess.nbcamp.challnge2.assignment.todo.content.TodoContentEntryType
-import com.jess.nbcamp.challnge2.assignment.todo.content.TodoContentUiState
+import com.jess.nbcamp.challnge2.assignment.todo.list.TodoListItem
 
-class TodoListViewModel : ViewModel() {
+class BookmarkListViewModel: ViewModel() {
 
-    private val _uiState: MutableLiveData<TodoListUiState> =
-        MutableLiveData(TodoListUiState.init())
-    val uiState: LiveData<TodoListUiState> get() = _uiState
+    private val _uiState: MutableLiveData<BookmarkListUiState> =
+        MutableLiveData(BookmarkListUiState.init())
+    val uiState: LiveData<BookmarkListUiState> get() = _uiState
 
-    private val _event: SingleLiveEvent<TodoListEvent> = SingleLiveEvent()
-    val event: LiveData<TodoListEvent> get() = _event
+    private val _event: SingleLiveEvent<BookmarkListEvent> = SingleLiveEvent()
+    val event: LiveData<BookmarkListEvent> get() = _event
 
-
-    fun addTodoItem(
-        model: TodoEntity?
-    ) {
-        if (model == null) {
-            return
-        }
-
-        val mutableList = uiState.value?.list.orEmpty().toMutableList()
-        _uiState.value = uiState.value?.copy(
-            list = mutableList.apply {
-                add(
-                    createTodoItem(model)
-                )
-            }
-        )
-    }
-
-    private fun createTodoItem(entity: TodoEntity, isBookmark: Boolean = false): TodoListItem =
+    private fun createTodoItem(entity: TodoEntity, isBookmark: Boolean = true): TodoListItem =
         TodoListItem.Item(
             id = entity.id,
             title = entity.title,
             content = entity.content,
             isBookmark = isBookmark
         )
-
-
     fun updateTodoItem(
         entryType: TodoContentEntryType?,
         entity: TodoEntity?
@@ -102,7 +82,7 @@ class TodoListViewModel : ViewModel() {
         item: TodoListItem
     ) {
         _event.value = when (item) {
-            is TodoListItem.Item -> TodoListEvent.OpenContent(
+            is TodoListItem.Item -> BookmarkListEvent.OpenContent(
                 position,
                 TodoEntity(
                     id = item.id,
@@ -118,17 +98,11 @@ class TodoListViewModel : ViewModel() {
         if (item is TodoListItem.Item) {
             when (event) {
                 BookmarkEventState.Create -> {
-                    val position = mutableList.indexOfFirst {
-                        when (it) {
-                            is TodoListItem.Item -> {
-                                it.id == item.id
-                            }
-                        }
-                    }
-
                     _uiState.value = uiState.value?.copy(
-                        list = mutableList.also { list ->
-                            list[position] = item
+                        list = mutableList.apply {
+                            add(
+                                item
+                            )
                         }
                     )
                 }
@@ -151,7 +125,7 @@ class TodoListViewModel : ViewModel() {
                 BookmarkEventState.Delete -> {
                     _uiState.value = uiState.value?.copy(
                         list = mutableList.apply {
-                            find {
+                            removeIf {
                                 when (it) {
                                     is TodoListItem.Item -> {
                                         it.id == item.id
